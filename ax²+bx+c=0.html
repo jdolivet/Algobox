@@ -1,0 +1,1333 @@
+<!-- Généré par AlgoBox -->
+<html>
+<head>
+<title>AlgoBox</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+BODY 
+{
+font-family:  'Times New Roman',serif,times ;
+background-color:#FFFFFF;
+color:#000000;
+margin-top: 5px;
+margin-left: 5px;
+margin-right: 5px;
+margin-bottom: 5px;
+}
+A:link    { color:#335d88;font-weight: bold; text-decoration: none;}
+A:visited { color:#335d88;font-weight: bold;  text-decoration: none;}
+A:hover   { color:red; font-weight: bold; text-decoration: none;}
+
+textarea
+{
+border-width : 1px;
+font-family :  'Liberation Mono', 'Courier New', monospace; 
+background : #f6f6f6;
+padding : .1em .3em;
+border-color : #000;
+}
+
+#contentlabel
+{
+font-family : 'Times New Roman',serif,times ;
+font-size : 1.2em;
+color: #666666;
+font-variant: small-caps;
+background-color:#FFFFFF;
+padding-left: 0px;
+padding-right: 5px;
+margin-top: 5px;
+margin-bottom: 5px;
+border-bottom: 2px dotted #888;
+}
+
+#contentgraphic
+{
+font-family : 'Times New Roman',serif,times ;
+font-size : 1.2em;
+color: #666666;
+font-variant: small-caps;
+background-color:#FFFFFF;
+padding-left: 0px;
+padding-right: 5px;
+margin-top: 5px;
+margin-bottom: 5px;
+border-bottom: 2px dotted #888;
+}
+
+#header
+{
+color: #666666;
+font-family : 'Times New Roman',serif,times ;
+font-weight: bold;
+font-variant: small-caps;
+background-color:#FFFFFF;
+font-size: 1.4em;
+padding: 2px 0 2px 10px;
+margin: 0px;
+text-align : center;
+/*border-bottom: 2px dotted #888;*/
+}
+
+#code
+{
+font-family :  'Liberation Mono', 'Courier New', monospace; 
+color:#000;
+background-color:#f0f0f0;
+border:1px solid #69c;
+line-height:150%;
+padding: 5px 5px 5px 5px;
+font-size: 0.9em;
+}
+
+#footer
+{
+position : relative;
+top : 1em;
+border-top: 2px dotted;
+border-color: #888;
+text-align: center;
+font-size: .8em;
+font-family :  'Times New Roman',serif,times ;
+padding: 2px;
+clear: both;
+}
+
+div.output 
+{
+overflow: auto;
+border:1px solid #69c;
+padding : .1em .3em;
+background : #f6f6f6;
+}
+
+div.output pre 
+{
+margin: 0;
+font-family: 'Liberation Mono', 'Courier New', monospace; 
+padding: .2em .4em;
+font-size: 0.9em;
+}
+</style>
+<script language="JavaScript">
+/***************************************************************************
+ *   copyright       : (C) 2009-2010 by Pascal Brachet                     *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+var ALGOBOX_x1=0;
+var ALGOBOX_x2=450;
+var ALGOBOX_y1=0;
+var ALGOBOX_y2=450;
+var ALGOBOX_canevas=document.createElement("canvas");
+if (navigator.appName!="Microsoft Internet Explorer")
+    {
+    var ALGOBOX_contexte=ALGOBOX_canevas.getContext("2d");
+    }
+ALGOBOX_canevas.setAttribute("width",ALGOBOX_x2+4);
+ALGOBOX_canevas.setAttribute("height",ALGOBOX_y2+4);
+var ALGOBOX_Xmin=-10;
+var ALGOBOX_Xmax=10;
+var ALGOBOX_Ymin=-10;
+var ALGOBOX_Ymax=10;
+var ALGOBOX_gradx=1;
+var ALGOBOX_grady=1;
+var ALGOBOX_COMPTEUR_AFFICHAGE=0;
+var ALGOBOX_DEPASSEMENT_AFFICHAGE=false;
+var ALGOBOX_COMPTEUR_BOUCLE_GLOBAL=0;
+var ALGOBOX_LIGNE_COURANTE=1;
+var ALGOBOX_EMERGENCY_STOP=false;
+
+//*******************************
+function ALGOBOX_SOMME(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var somme=0;
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else somme+=liste[ind];
+  }
+return somme;
+}
+
+function ALGOBOX_MOYENNE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var somme, result;
+somme=ALGOBOX_SOMME(liste,debut,fin);
+if (somme=="Erreur") return "Erreur";
+result=somme/(fin-debut+1);
+return result;
+}
+
+function ALGOBOX_VARIANCE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var carres=new Array();
+var moyenne=ALGOBOX_MOYENNE(liste,debut,fin);
+var somme,result;
+if (moyenne=="Erreur") return "Erreur";
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else carres[ind]=Math.pow(liste[ind]-moyenne,2);
+  }
+somme=ALGOBOX_SOMME(carres,debut,fin);
+if (somme=="Erreur") return "Erreur";
+result=somme/(fin-debut+1);
+return result;
+}
+
+function ALGOBOX_ECART_TYPE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var variance,result;
+variance=ALGOBOX_VARIANCE(liste,debut,fin);
+if ((variance=="Erreur") || (variance<0)) return "Erreur";
+result=Math.sqrt(variance);
+return result;
+}
+
+function ALGOBOX_MEDIANE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var eff=fin-debut+1;
+var rang=Math.floor(eff/2);
+var mediane;
+if (eff%2==0)  mediane=(liste_triee[rang]+liste_triee[rang-1])/2;
+else mediane=liste_triee[rang];
+return mediane;
+}
+
+function ALGOBOX_QUARTILE1(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var reste=eff%4;
+var quotient=Math.floor(eff/4);
+switch (reste)
+  {
+  case 0:
+  quartile=(liste_triee[quotient-1]+liste_triee[quotient])/2;
+  break;
+  case 1:
+  quartile=(liste_triee[quotient-1]+liste_triee[quotient])/2;
+  break;
+  case 2:
+  quartile=liste_triee[quotient];
+  break;
+  case 3:
+  quartile=liste_triee[quotient];
+  break;
+  }
+return quartile;
+}
+
+function ALGOBOX_QUARTILE3(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var reste=eff%4;
+var quotient=Math.floor(eff/4);
+switch (reste)
+  {
+  case 0:
+  quartile=(liste_triee[3*quotient-1]+liste_triee[3*quotient])/2;
+  break;
+  case 1:
+  quartile=(liste_triee[3*quotient]+liste_triee[3*quotient+1])/2;
+  break;
+  case 2:
+  quartile=liste_triee[3*quotient+1];
+  break;
+  case 3:
+  quartile=liste_triee[3*quotient+2];
+  break;
+  }
+return quartile;
+}
+
+function ALGOBOX_QUARTILE1_BIS(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var quotient=Math.floor(eff/4);
+var reste=eff/4-quotient;
+if (reste==0) quartile=liste_triee[quotient-1];
+else quartile=liste_triee[quotient];
+return quartile;
+}
+
+function ALGOBOX_QUARTILE3_BIS(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var quotient=Math.floor(3*eff/4);
+var reste=3*eff/4-quotient;
+if (reste==0) quartile=liste_triee[quotient-1];
+else quartile=liste_triee[quotient];
+return quartile;
+}
+
+function ALGOBOX_MINIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=liste[debut];
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]<result) result=liste[ind];
+  }
+return result;
+}
+
+function ALGOBOX_POS_MINIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=debut;
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]<liste[result]) result=ind;
+  }
+return result;
+}
+
+function ALGOBOX_MAXIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=liste[debut];
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]>result) result=liste[ind];
+  }
+return result;
+}
+
+function ALGOBOX_POS_MAXIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=debut;
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]>liste[result]) result=ind;
+  }
+return result;
+}
+//*******************************
+
+function ALGOBOX_CALCULER_EXPRESSION(calcul)
+{
+var r;
+calcul.replace(new RegExp("Math.PI","g"),"PI");
+with (Math) {r=eval(calcul)}
+if ( (!isFinite(r)) || isNaN(r)) return "Erreur";
+else return ALGOBOX_ARRONDI(r);
+}
+
+function ALGOBOX_FORMAT_TEXTE(u)
+{
+var r,negatif,m,p,result;
+if (isNaN(u)) result="Erreur";
+else 
+	{
+	if (u<0) negatif=true;
+	r=Math.abs(u).toPrecision(8);
+	if (r.lastIndexOf("e")>0)
+	  {
+	  m=r.substring(0,r.lastIndexOf("e"));
+	  p=r.substring(r.lastIndexOf("e"),r.length);
+	  while ((m.length>1) && (m.indexOf(".")>=0) && (m.lastIndexOf("0")==m.length-1)) {m=m.substring(0,m.length-1);}
+	  if ((m.length>1) && (m.lastIndexOf(".")==m.length-1)) {m=m.substring(0,m.length-1);}
+	  result=m+p;
+	  }
+	else
+	  {
+	  while ((r.length>1) && (r.indexOf(".")>=0) && (r.lastIndexOf("0")==r.length-1)) {r=r.substring(0,r.length-1);}
+	  if ((r.length>1) && (r.lastIndexOf(".")==r.length-1)) {r=r.substring(0,r.length-1);}
+	  result=r;
+	  }
+	if (result.substring(0,1)==".") result="0"+result;
+	if (negatif) result='-'+result;
+	}   
+return result;
+}
+
+function ALGOBOX_ENTIER(nb) 
+{ 
+if (Math.abs(nb)<1) return 0 
+else return parseInt(nb);
+}
+
+function ALGOBOX_ARRONDI(nb) 
+{ 
+if ( (!isFinite(nb)) || isNaN(nb)) return "Erreur";
+else return parseFloat(nb.toPrecision(12));
+}
+//******************
+function ALGOBOX_HX(ALGOBOX_x)
+{
+return (ALGOBOX_x2-ALGOBOX_x1)/(ALGOBOX_Xmax-ALGOBOX_Xmin)*(ALGOBOX_x-ALGOBOX_Xmin)+ALGOBOX_x1;
+}
+
+function ALGOBOX_HY(ALGOBOX_y)
+{
+return (ALGOBOX_y1-ALGOBOX_y2)/(ALGOBOX_Ymax-ALGOBOX_Ymin)*(ALGOBOX_y-ALGOBOX_Ymax)+ALGOBOX_y1;
+}
+
+function ALGOBOX_AXEX()
+{
+ ALGOBOX_DESSINE(0,ALGOBOX_Ymin,0,ALGOBOX_Ymax,1);
+}
+
+function ALGOBOX_AXEY()
+{
+ALGOBOX_DESSINE(ALGOBOX_Xmin,0,ALGOBOX_Xmax,0,1);
+}
+
+function ALGOBOX_IHX(ALGOBOX_x)
+{
+return ALGOBOX_x*(ALGOBOX_Xmax-ALGOBOX_Xmin)/(ALGOBOX_x2-ALGOBOX_x1);
+}
+
+function ALGOBOX_IHY(ALGOBOX_y)
+{
+return ALGOBOX_y*(ALGOBOX_Ymax-ALGOBOX_Ymin)/(ALGOBOX_y1-ALGOBOX_y2);
+}
+
+function ALGOBOX_DESSINE(ALGOBOX_X,ALGOBOX_Y,ALGOBOX_U,ALGOBOX_V,ALGOBOX_coul)
+{
+if (navigator.appName=="Microsoft Internet Explorer") return;
+ALGOBOX_contexte.beginPath();
+    switch (ALGOBOX_coul)
+    {
+    case 0:
+    ALGOBOX_contexte.strokeStyle="gray";
+    ALGOBOX_contexte.lineWidth=0.5;
+    break;
+    case 1:
+    ALGOBOX_contexte.strokeStyle="black";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 2:
+    ALGOBOX_contexte.strokeStyle="blue";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 3:
+    ALGOBOX_contexte.strokeStyle="red";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 4:
+    ALGOBOX_contexte.strokeStyle="green";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    }
+ALGOBOX_contexte.moveTo(Math.round(ALGOBOX_HX(ALGOBOX_X))+2,Math.round(ALGOBOX_HY(ALGOBOX_Y))+2);
+ALGOBOX_contexte.lineTo(Math.round(ALGOBOX_HX(ALGOBOX_U))+2,Math.round(ALGOBOX_HY(ALGOBOX_V))+2);
+ALGOBOX_contexte.stroke();
+}
+
+function ALGOBOX_GRADUERY(ALGOBOX_originex,ALGOBOX_originey)
+{
+var ALGOBOX_temp=(ALGOBOX_originey-ALGOBOX_Ymin)/ALGOBOX_grady;
+var ALGOBOX_yd=(ALGOBOX_temp-parseInt(ALGOBOX_temp))*ALGOBOX_grady+ALGOBOX_Ymin;
+do
+	{
+	ALGOBOX_DESSINE(ALGOBOX_Xmin,ALGOBOX_yd,ALGOBOX_Xmax,ALGOBOX_yd,0);
+	//ALGOBOX_DESSINE(ALGOBOX_originex,ALGOBOX_yd,ALGOBOX_originex+ALGOBOX_IHX(0.01*(ALGOBOX_x2-ALGOBOX_x1)),ALGOBOX_yd,0);
+	ALGOBOX_yd=ALGOBOX_yd+ALGOBOX_grady;
+	}
+while (ALGOBOX_yd<=ALGOBOX_Ymax);
+}
+
+function ALGOBOX_GRADUERX(ALGOBOX_originex,ALGOBOX_originey)
+{
+var ALGOBOX_temp=(ALGOBOX_originex-ALGOBOX_Xmin)/ALGOBOX_gradx;
+var ALGOBOX_xd=(ALGOBOX_temp-parseInt(ALGOBOX_temp))*ALGOBOX_gradx+ALGOBOX_Xmin;
+do
+	{
+	ALGOBOX_DESSINE(ALGOBOX_xd,ALGOBOX_Ymin,ALGOBOX_xd,ALGOBOX_Ymax,0);
+	//ALGOBOX_DESSINE(ALGOBOX_xd,ALGOBOX_originey,ALGOBOX_xd,ALGOBOX_originey-ALGOBOX_IHY(0.01*(ALGOBOX_y2-ALGOBOX_y1)),0);
+	ALGOBOX_xd=ALGOBOX_xd+ALGOBOX_gradx;
+	}
+while (ALGOBOX_xd<=ALGOBOX_Xmax);
+}
+
+function ALGOBOX_GRADUATION()
+{
+if (ALGOBOX_Xmin*ALGOBOX_Xmax<=0) ALGOBOX_originex=0;
+else ALGOBOX_originex=ALGOBOX_Xmin;
+if (ALGOBOX_Ymin*ALGOBOX_Ymax<=0) ALGOBOX_originey=0;
+else ALGOBOX_originey=ALGOBOX_Ymin;
+ALGOBOX_GRADUERX(ALGOBOX_originex,ALGOBOX_originey);
+ALGOBOX_GRADUERY(ALGOBOX_originex,ALGOBOX_originey);
+}
+
+function ALGOBOX_CODAGE_POINT(ALGOBOX_x,ALGOBOX_y)
+{
+var tableau=new Array(4);
+if (ALGOBOX_x<ALGOBOX_Xmin) tableau[0]=1;
+else tableau[0]=0;
+if (ALGOBOX_x>ALGOBOX_Xmax) tableau[1]=1;
+else tableau[1]=0;
+if (ALGOBOX_y<ALGOBOX_Ymin) tableau[2]=1;
+else tableau[2]=0;
+if (ALGOBOX_y>ALGOBOX_Ymax) tableau[3]=1;
+else tableau[3]=0;
+return tableau;
+}
+
+function ALGOBOX_INTER(ALGOBOX_code1,ALGOBOX_code2)
+{
+var ALGOBOX_s=0;
+for (ALGOBOX_ind=0;ALGOBOX_ind<=3;ALGOBOX_ind++) 
+	{
+	ALGOBOX_s=ALGOBOX_s+ALGOBOX_code1[ALGOBOX_ind]*ALGOBOX_code2[ALGOBOX_ind];
+	}
+return ALGOBOX_s;
+}
+
+function ALGOBOX_DEDANS(ALGOBOX_c)
+{
+var ALGOBOX_result=true;
+for (ALGOBOX_ind=0;ALGOBOX_ind<=3;ALGOBOX_ind++) 
+	{
+	if (ALGOBOX_c[ALGOBOX_ind]==1) ALGOBOX_result=false;
+	}
+return ALGOBOX_result;
+}
+
+function ALGOBOX_POINT(ALGOBOX_xd,ALGOBOX_yd,ALGOBOX_coul)
+{
+if (navigator.appName=="Microsoft Internet Explorer") return;
+var ALGOBOX_code=ALGOBOX_CODAGE_POINT(ALGOBOX_xd,ALGOBOX_yd);
+if (ALGOBOX_DEDANS(ALGOBOX_code))
+    {
+    ALGOBOX_contexte.beginPath();
+    switch (ALGOBOX_coul)
+    {
+    case 0:
+    ALGOBOX_contexte.fillStyle="gray";
+    break;
+    case 1:
+    ALGOBOX_contexte.fillStyle="black";
+    break;
+    case 2:
+    ALGOBOX_contexte.fillStyle="blue";
+    break;
+    case 3:
+    ALGOBOX_contexte.fillStyle="red";
+    break;
+    case 4:
+    ALGOBOX_contexte.fillStyle="green";
+    break;
+    }
+    ALGOBOX_contexte.arc(ALGOBOX_HX(ALGOBOX_xd)+2,ALGOBOX_HY(ALGOBOX_yd)+2, 2, 0, Math.PI*2, true);
+    ALGOBOX_contexte.closePath();
+    ALGOBOX_contexte.fill();
+    }
+}
+
+function ALGOBOX_TRAIT(ALGOBOX_xd,ALGOBOX_yd,ALGOBOX_xf,ALGOBOX_yf,ALGOBOX_coul)
+{
+var ALGOBOX_xdd=ALGOBOX_xd;
+var ALGOBOX_ydd=ALGOBOX_yd;
+var ALGOBOX_xff=ALGOBOX_xf;
+var ALGOBOX_yff=ALGOBOX_yf;
+var ALGOBOX_coded=ALGOBOX_CODAGE_POINT(ALGOBOX_xdd,ALGOBOX_ydd);
+var ALGOBOX_codef=ALGOBOX_CODAGE_POINT(ALGOBOX_xff,ALGOBOX_yff);
+if (ALGOBOX_DEDANS(ALGOBOX_coded) && ALGOBOX_DEDANS(ALGOBOX_codef)) ALGOBOX_DESSINE(ALGOBOX_xdd,ALGOBOX_ydd,ALGOBOX_xff,ALGOBOX_yff,ALGOBOX_coul);
+else
+{
+	if (ALGOBOX_INTER(ALGOBOX_coded,ALGOBOX_codef)==0)
+	{
+		do
+		{
+			ALGOBOX_dx=(ALGOBOX_xff-ALGOBOX_xdd);
+			ALGOBOX_dy=(ALGOBOX_yff-ALGOBOX_ydd);
+			if (ALGOBOX_coded[0]==1)
+					{
+					ALGOBOX_ydd=ALGOBOX_ydd+(ALGOBOX_Xmin-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xdd=ALGOBOX_Xmin;
+					}
+			else if (ALGOBOX_coded[1]==1)
+					{
+					ALGOBOX_ydd=ALGOBOX_ydd+(ALGOBOX_Xmax-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xdd=ALGOBOX_Xmax;
+					}
+				else if (ALGOBOX_coded[2]==1)
+						{
+						ALGOBOX_xdd=ALGOBOX_xdd+(ALGOBOX_Ymin-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+						ALGOBOX_ydd=ALGOBOX_Ymin;
+						}
+					else if (ALGOBOX_coded[3]==1)
+							{
+							ALGOBOX_xdd=ALGOBOX_xdd+(ALGOBOX_Ymax-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+							ALGOBOX_ydd=ALGOBOX_Ymax;
+							}
+			ALGOBOX_coded=ALGOBOX_CODAGE_POINT(ALGOBOX_xdd,ALGOBOX_ydd);
+		}
+		while (!ALGOBOX_DEDANS(ALGOBOX_coded));
+		do
+		{
+			ALGOBOX_dx=(ALGOBOX_xff-ALGOBOX_xdd);
+			ALGOBOX_dy=(ALGOBOX_yff-ALGOBOX_ydd);
+			if (ALGOBOX_codef[0]==1)
+					{
+					ALGOBOX_yff=ALGOBOX_ydd+(ALGOBOX_Xmin-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xff=ALGOBOX_Xmin;
+					}
+			else if (ALGOBOX_codef[1]==1)
+					{
+					ALGOBOX_yff=ALGOBOX_ydd+(ALGOBOX_Xmax-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xff=ALGOBOX_Xmax;
+					}
+				else if (ALGOBOX_codef[2]==1)
+						{
+						ALGOBOX_xff=ALGOBOX_xdd+(ALGOBOX_Ymin-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+						ALGOBOX_yff=ALGOBOX_Ymin;
+						}
+					else if (ALGOBOX_codef[3]==1)
+							{
+							ALGOBOX_xff=ALGOBOX_xdd+(ALGOBOX_Ymax-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+							ALGOBOX_yff=ALGOBOX_Ymax;
+							}
+			ALGOBOX_codef=ALGOBOX_CODAGE_POINT(ALGOBOX_xff,ALGOBOX_yff);
+		}
+		while (!ALGOBOX_DEDANS(ALGOBOX_codef));
+		ALGOBOX_DESSINE(ALGOBOX_xdd,ALGOBOX_ydd,ALGOBOX_xff,ALGOBOX_yff,ALGOBOX_coul);
+	}
+}
+}
+
+function ALGOBOX_REPERE(xmin,xmax,ymin,ymax,gradx,grady)
+{
+ALGOBOX_Xmin=xmin;
+ALGOBOX_Xmax=xmax;
+ALGOBOX_Ymin=ymin;
+ALGOBOX_Ymax=ymax;
+ALGOBOX_gradx=gradx;
+ALGOBOX_grady=grady;
+var output_legende=document.getElementById("legende");
+while (output_legende.firstChild) 
+  {
+  output_legende.removeChild(output_legende.firstChild);
+  }
+if (navigator.appName=="Microsoft Internet Explorer")
+    {
+    output_legende.appendChild(document.createTextNode("Votre navigateur ne permet pas l'affichage des graphiques : utilisez AlgoBox ou un navigateur autre qu'internet explorer."));
+    return;
+    }
+if ((ALGOBOX_Xmin>=ALGOBOX_Xmax) || (ALGOBOX_Ymin>=ALGOBOX_Ymax))
+    {
+    ALGOBOX_Xmin=-10;
+    ALGOBOX_Xmax=10;
+    ALGOBOX_Ymin=-10;
+    ALGOBOX_Ymax=10;
+    }
+if (ALGOBOX_gradx<=0) ALGOBOX_gradx=1;
+if (ALGOBOX_grady<=0) ALGOBOX_grady=1;
+if ((ALGOBOX_Xmax-ALGOBOX_Xmin)/ALGOBOX_gradx>45) ALGOBOX_gradx=Math.round((ALGOBOX_Xmax-ALGOBOX_Xmin)/45);
+if ((ALGOBOX_Ymax-ALGOBOX_Ymin)/ALGOBOX_grady>45) ALGOBOX_grady=Math.round((ALGOBOX_Ymax-ALGOBOX_Ymin)/45); 
+ALGOBOX_GRADUATION();
+ALGOBOX_contexte.strokeStyle="black";
+ALGOBOX_contexte.strokeRect(ALGOBOX_x1+2,ALGOBOX_y1+2,ALGOBOX_x2-ALGOBOX_x1,ALGOBOX_y2-ALGOBOX_y1);
+if (ALGOBOX_Xmin*ALGOBOX_Xmax<=0) ALGOBOX_AXEX();
+if (ALGOBOX_Ymin*ALGOBOX_Ymax<=0) ALGOBOX_AXEY();
+legende=document.createTextNode("Xmin: "+ALGOBOX_Xmin+" ; Xmax: "+ALGOBOX_Xmax+" ; Ymin: "+ALGOBOX_Ymin+" ; Ymax: "+ALGOBOX_Ymax+" ; GradX: "+ALGOBOX_gradx+" ; GradY: "+ALGOBOX_grady);
+output_legende.appendChild(legende);
+}
+
+function ALGOBOX_INIT_VARIABLES()
+{
+ALGOBOX_COMPTEUR_AFFICHAGE=0;
+ALGOBOX_DEPASSEMENT_AFFICHAGE=false;
+ALGOBOX_EMERGENCY_STOP=false;
+a=0;
+b=0;
+c=0;
+d=0;
+e=0;
+f=0;
+g=0;
+h=0;
+i=0;
+j=0;
+
+}
+
+function ALGOBOX_EFFACE_OUTPUT()
+{
+var output=document.getElementById("output");
+while (output.firstChild) 
+  {
+  output.removeChild(output.firstChild);
+  }
+}
+
+function ALGOBOX_AFFICHE_OUTPUT(texte,nl)
+{
+var output=document.getElementById("output");
+if (output.childNodes.length>0)
+  {
+  var derniere_ligne=output.lastChild;
+  var ligne=document.createElement("pre");
+  ligne.appendChild(document.createTextNode(derniere_ligne.lastChild.nodeValue+texte));
+  output.replaceChild(ligne,derniere_ligne);
+  }
+else
+  {
+  var ligne=document.createElement("pre");
+  ligne.appendChild(document.createTextNode(texte));
+  output.appendChild(ligne);
+  }
+if (nl)
+   {
+    var nouvelle_ligne=document.createElement("pre");
+    nouvelle_ligne.appendChild(document.createTextNode(""));
+    output.appendChild(nouvelle_ligne);
+   }
+output.scrollTop = output.scrollHeight - output.clientHeight;
+}
+
+function ALGOBOX_AJOUTE_OUTPUT(texte,nl)
+{
+ALGOBOX_COMPTEUR_AFFICHAGE++;
+if (ALGOBOX_COMPTEUR_AFFICHAGE>=1000)
+  {
+  if (confirm("L'algorithme demande d'afficher un très grand nombre de données provoquant ainsi un risque de gel du programme.\nSouhaitez-vous arrêter l'algorithme?")) ALGOBOX_DEPASSEMENT_AFFICHAGE=true;
+  else 
+	{
+	ALGOBOX_AFFICHE_OUTPUT(texte,nl);
+	}
+ALGOBOX_COMPTEUR_AFFICHAGE=0;
+  }
+else ALGOBOX_AFFICHE_OUTPUT(texte,nl);
+}
+
+function ALGOBOX_PAUSE()
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***pause***",true);
+return confirm("Pause dans l'exécution de l'algorithme.\nSouhaitez-vous continuer l'exécution de l'algorithme?");
+}
+
+function ALGOBOX_ACTIVER_LIGNE(ALGOBOX_ID_LIGNE)
+{
+var ligne_source=document.getElementById("ligne"+ALGOBOX_ID_LIGNE);
+ligne_source.style.color="red";
+ligne_source.style.fontWeight="bold";
+}
+
+function ALGOBOX_DESACTIVER_LIGNE(ALGOBOX_ID_LIGNE)
+{
+var ligne_source=document.getElementById("ligne"+ALGOBOX_ID_LIGNE);
+ligne_source.style.fontWeight="normal";
+ligne_source.style.color="black";
+}
+
+// Code Algorithme :
+ALGOBOX_LIGNE_COURANTE=1;
+//VARIABLES
+ALGOBOX_LIGNE_COURANTE=2;
+a=new Number();
+ALGOBOX_LIGNE_COURANTE=3;
+b=new Number();
+ALGOBOX_LIGNE_COURANTE=4;
+c=new Number();
+ALGOBOX_LIGNE_COURANTE=5;
+d=new Number();
+ALGOBOX_LIGNE_COURANTE=6;
+e=new Number();
+ALGOBOX_LIGNE_COURANTE=7;
+f=new Number();
+ALGOBOX_LIGNE_COURANTE=8;
+g=new Number();
+ALGOBOX_LIGNE_COURANTE=9;
+h=new Number();
+ALGOBOX_LIGNE_COURANTE=10;
+i=new Number();
+ALGOBOX_LIGNE_COURANTE=11;
+j=new Number();
+function F1(x)
+{
+return x;
+}
+function ALGOBOX_ALGO(ALGOBOX_PAS_A_PAS)
+{
+ALGOBOX_DESACTIVER_LIGNE(ALGOBOX_LIGNE_COURANTE);
+ALGOBOX_LIGNE_COURANTE=12;
+ALGOBOX_COMPTEUR_BOUCLE_GLOBAL=0
+ALGOBOX_EFFACE_OUTPUT();
+ALGOBOX_INIT_VARIABLES();
+if (ALGOBOX_PAS_A_PAS) ALGOBOX_AJOUTE_OUTPUT("***Algorithme lancé en mode pas à pas***",true);
+else ALGOBOX_AJOUTE_OUTPUT("***Algorithme lancé***",true);
+try
+{
+ALGOBOX_LIGNE_COURANTE=13;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+a_temp=prompt("Entrer a :\n(utiliser le . comme séparateur décimal)\n(exemples de syntaxe possible : -3 ; 2.6 ; 4/3 ; 1+sqrt(3) ; ...)");
+if (!a_temp) {throw("erreur_input");}
+if (ALGOBOX_CALCULER_EXPRESSION(a_temp)=="Erreur") {throw("erreur_calcul");}
+a=ALGOBOX_CALCULER_EXPRESSION(a_temp);
+
+ALGOBOX_LIGNE_COURANTE=14;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+b_temp=prompt("Entrer b :\n(utiliser le . comme séparateur décimal)\n(exemples de syntaxe possible : -3 ; 2.6 ; 4/3 ; 1+sqrt(3) ; ...)");
+if (!b_temp) {throw("erreur_input");}
+if (ALGOBOX_CALCULER_EXPRESSION(b_temp)=="Erreur") {throw("erreur_calcul");}
+b=ALGOBOX_CALCULER_EXPRESSION(b_temp);
+
+ALGOBOX_LIGNE_COURANTE=15;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+c_temp=prompt("Entrer c :\n(utiliser le . comme séparateur décimal)\n(exemples de syntaxe possible : -3 ; 2.6 ; 4/3 ; 1+sqrt(3) ; ...)");
+if (!c_temp) {throw("erreur_input");}
+if (ALGOBOX_CALCULER_EXPRESSION(c_temp)=="Erreur") {throw("erreur_calcul");}
+c=ALGOBOX_CALCULER_EXPRESSION(c_temp);
+
+ALGOBOX_LIGNE_COURANTE=16;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(b*b-4*a*c)=="Erreur") {throw("erreur_calcul");}
+d=ALGOBOX_ARRONDI(b*b-4*a*c);
+
+ALGOBOX_LIGNE_COURANTE=17;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Le discriminant vaut : ",false);
+ALGOBOX_LIGNE_COURANTE=18;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(d),true);
+ALGOBOX_LIGNE_COURANTE=19;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (d>0)
+{
+ALGOBOX_LIGNE_COURANTE=20;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=21;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI((-b+Math.sqrt(d))/(2*a))=="Erreur") {throw("erreur_calcul");}
+e=ALGOBOX_ARRONDI((-b+Math.sqrt(d))/(2*a));
+
+ALGOBOX_LIGNE_COURANTE=22;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI((-b-Math.sqrt(d))/(2*a))=="Erreur") {throw("erreur_calcul");}
+f=ALGOBOX_ARRONDI((-b-Math.sqrt(d))/(2*a));
+
+ALGOBOX_LIGNE_COURANTE=23;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(a*e*e+b*e+c)=="Erreur") {throw("erreur_calcul");}
+i=ALGOBOX_ARRONDI(a*e*e+b*e+c);
+
+ALGOBOX_LIGNE_COURANTE=24;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(a*f*f+b*f+c)=="Erreur") {throw("erreur_calcul");}
+j=ALGOBOX_ARRONDI(a*f*f+b*f+c);
+
+ALGOBOX_LIGNE_COURANTE=25;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("L'équation ",false);
+ALGOBOX_LIGNE_COURANTE=26;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=27;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x²+",false);
+ALGOBOX_LIGNE_COURANTE=28;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=29;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x+",false);
+ALGOBOX_LIGNE_COURANTE=30;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=31;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=0 a deux solutions :",true);
+ALGOBOX_LIGNE_COURANTE=32;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x1=",false);
+ALGOBOX_LIGNE_COURANTE=33;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(e),false);
+ALGOBOX_LIGNE_COURANTE=34;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(" et x2=",false);
+ALGOBOX_LIGNE_COURANTE=35;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(f),true);
+ALGOBOX_LIGNE_COURANTE=36;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Vérification :",true);
+ALGOBOX_LIGNE_COURANTE=37;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=38;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=39;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(e),false);
+ALGOBOX_LIGNE_COURANTE=40;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("²+",false);
+ALGOBOX_LIGNE_COURANTE=41;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=42;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=43;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(e),false);
+ALGOBOX_LIGNE_COURANTE=44;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("+",false);
+ALGOBOX_LIGNE_COURANTE=45;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=46;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=",false);
+ALGOBOX_LIGNE_COURANTE=47;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(i),true);
+ALGOBOX_LIGNE_COURANTE=48;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=49;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=50;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(f),false);
+ALGOBOX_LIGNE_COURANTE=51;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("²+",false);
+ALGOBOX_LIGNE_COURANTE=52;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=53;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=54;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(f),false);
+ALGOBOX_LIGNE_COURANTE=55;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("+",false);
+ALGOBOX_LIGNE_COURANTE=56;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=57;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=",false);
+ALGOBOX_LIGNE_COURANTE=58;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(j),true);
+ALGOBOX_LIGNE_COURANTE=59;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (i!=0 || j!=0)
+{
+ALGOBOX_LIGNE_COURANTE=60;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=61;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Problème de précision!",false);
+ALGOBOX_LIGNE_COURANTE=62;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+ALGOBOX_LIGNE_COURANTE=63;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+else
+{
+ALGOBOX_LIGNE_COURANTE=65;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=66;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (d==0)
+{
+ALGOBOX_LIGNE_COURANTE=67;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=68;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(-b/(2*a))=="Erreur") {throw("erreur_calcul");}
+g=ALGOBOX_ARRONDI(-b/(2*a));
+
+ALGOBOX_LIGNE_COURANTE=69;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(a*g*g+b*g+c)=="Erreur") {throw("erreur_calcul");}
+h=ALGOBOX_ARRONDI(a*g*g+b*g+c);
+
+ALGOBOX_LIGNE_COURANTE=70;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("L'équation ",false);
+ALGOBOX_LIGNE_COURANTE=71;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=72;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x²+",false);
+ALGOBOX_LIGNE_COURANTE=73;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=74;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x+",false);
+ALGOBOX_LIGNE_COURANTE=75;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=76;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=0 a une solution :",true);
+ALGOBOX_LIGNE_COURANTE=77;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x=",false);
+ALGOBOX_LIGNE_COURANTE=78;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(g),true);
+ALGOBOX_LIGNE_COURANTE=79;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Vérification :",true);
+ALGOBOX_LIGNE_COURANTE=80;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=81;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=82;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(g),false);
+ALGOBOX_LIGNE_COURANTE=83;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("²+",false);
+ALGOBOX_LIGNE_COURANTE=84;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=85;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("*",false);
+ALGOBOX_LIGNE_COURANTE=86;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(g),false);
+ALGOBOX_LIGNE_COURANTE=87;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("+",false);
+ALGOBOX_LIGNE_COURANTE=88;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=89;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=",false);
+ALGOBOX_LIGNE_COURANTE=90;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(h),true);
+ALGOBOX_LIGNE_COURANTE=91;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (h!=0)
+{
+ALGOBOX_LIGNE_COURANTE=92;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=93;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Problème de précision!",false);
+ALGOBOX_LIGNE_COURANTE=94;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+ALGOBOX_LIGNE_COURANTE=95;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+else
+{
+ALGOBOX_LIGNE_COURANTE=97;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=98;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("L'équation ",false);
+ALGOBOX_LIGNE_COURANTE=99;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),false);
+ALGOBOX_LIGNE_COURANTE=100;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x²+",false);
+ALGOBOX_LIGNE_COURANTE=101;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(b),false);
+ALGOBOX_LIGNE_COURANTE=102;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("x+",false);
+ALGOBOX_LIGNE_COURANTE=103;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(c),false);
+ALGOBOX_LIGNE_COURANTE=104;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("=0 n'a pas de solution.",false);
+ALGOBOX_LIGNE_COURANTE=105;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+ALGOBOX_LIGNE_COURANTE=106;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme terminé***",false);
+}
+catch(ALGOBOX_MESSAGE)
+{
+if (ALGOBOX_MESSAGE=="erreur_input")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : erreur dans la lecture d'une variable ***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_calcul")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : erreur de calcul***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_boucle")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : dépassement de la capacité autorisée pour les boucles***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_affiche")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : affichage trop important de données***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_repere")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu : erreur dans la définition du repère graphique***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_pause")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+"***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_emergency")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu sur demande***",false);
+}
+else
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" suite à une erreur dans son exécution***",false);
+}
+ALGOBOX_ACTIVER_LIGNE(ALGOBOX_LIGNE_COURANTE);
+window.location.href = "#"+ALGOBOX_LIGNE_COURANTE;
+
+}
+}
+
+</script>
+</head>
+<body>
+<div id="header">AlgoBox : ax²+bx+c=0</div>
+<div id="contentlabel">Présentation de l'algorithme :</div>
+<p>
+Résolution de l'équation ax²+bx+c=0 (a≠0)
+</p>
+
+<div id="contentlabel">Tester l'algorithme :</div>
+<form name="forme1">
+<p>
+<input type="button" name="bouton" value="Lancer algorithme" onclick="ALGOBOX_ALGO(false);"><br>
+<i>(cliquer sur le bouton ci-dessus pour lancer ou relancer l'exécution de l'algorithme)</i><br>
+<b>Remarque :</b> si les messages "Algorithme lancé" et "Algorithme terminé" n'apparaissent pas au bout d'un moment dans la zone ci-dessous, c'est que l'algorithme contient une erreur.</p>
+<div id="contentlabel">Résultats :</div>
+<div style="width: 700px; height: 200px;" id="output" class="output">
+</div>
+</form>
+<div id="contentgraphic" style="visibility : hidden;">Graphique :</div>
+<div id="graphique"></div>
+<p id="legende"></p>
+<div id="contentlabel">Code de l'algorithme :</div>
+<div id="code">
+1&nbsp;&nbsp;&nbsp;&nbsp;<a name="1">&nbsp;</a><span id="ligne1" >VARIABLES</span><br>
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="2">&nbsp;</a><span id="ligne2" >a EST_DU_TYPE NOMBRE</span><br>
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="3">&nbsp;</a><span id="ligne3" >b EST_DU_TYPE NOMBRE</span><br>
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="4">&nbsp;</a><span id="ligne4" >c EST_DU_TYPE NOMBRE</span><br>
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="5">&nbsp;</a><span id="ligne5" >d EST_DU_TYPE NOMBRE</span><br>
+6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="6">&nbsp;</a><span id="ligne6" >e EST_DU_TYPE NOMBRE</span><br>
+7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="7">&nbsp;</a><span id="ligne7" >f EST_DU_TYPE NOMBRE</span><br>
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="8">&nbsp;</a><span id="ligne8" >g EST_DU_TYPE NOMBRE</span><br>
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="9">&nbsp;</a><span id="ligne9" >h EST_DU_TYPE NOMBRE</span><br>
+10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="10">&nbsp;</a><span id="ligne10" >i EST_DU_TYPE NOMBRE</span><br>
+11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="11">&nbsp;</a><span id="ligne11" >j EST_DU_TYPE NOMBRE</span><br>
+12&nbsp;&nbsp;&nbsp;<a name="12">&nbsp;</a><span id="ligne12" >DEBUT_ALGORITHME</span><br>
+13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="13">&nbsp;</a><span id="ligne13" >LIRE a</span><br>
+14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="14">&nbsp;</a><span id="ligne14" >LIRE b</span><br>
+15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="15">&nbsp;</a><span id="ligne15" >LIRE c</span><br>
+16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="16">&nbsp;</a><span id="ligne16" >d PREND_LA_VALEUR b*b-4*a*c</span><br>
+17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="17">&nbsp;</a><span id="ligne17" >AFFICHER "Le discriminant vaut : "</span><br>
+18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="18">&nbsp;</a><span id="ligne18" >AFFICHER d</span><br>
+19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="19">&nbsp;</a><span id="ligne19" >SI (d&gt;0) ALORS</span><br>
+20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="20">&nbsp;</a><span id="ligne20" >DEBUT_SI</span><br>
+21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="21">&nbsp;</a><span id="ligne21" >e PREND_LA_VALEUR (-b+sqrt(d))/(2*a)</span><br>
+22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="22">&nbsp;</a><span id="ligne22" >f PREND_LA_VALEUR (-b-sqrt(d))/(2*a)</span><br>
+23&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="23">&nbsp;</a><span id="ligne23" >i PREND_LA_VALEUR a*e*e+b*e+c</span><br>
+24&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="24">&nbsp;</a><span id="ligne24" >j PREND_LA_VALEUR a*f*f+b*f+c</span><br>
+25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="25">&nbsp;</a><span id="ligne25" >AFFICHER "L'équation "</span><br>
+26&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="26">&nbsp;</a><span id="ligne26" >AFFICHER a</span><br>
+27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="27">&nbsp;</a><span id="ligne27" >AFFICHER "x²+"</span><br>
+28&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="28">&nbsp;</a><span id="ligne28" >AFFICHER b</span><br>
+29&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="29">&nbsp;</a><span id="ligne29" >AFFICHER "x+"</span><br>
+30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="30">&nbsp;</a><span id="ligne30" >AFFICHER c</span><br>
+31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="31">&nbsp;</a><span id="ligne31" >AFFICHER "=0 a deux solutions :"</span><br>
+32&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="32">&nbsp;</a><span id="ligne32" >AFFICHER "x1="</span><br>
+33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="33">&nbsp;</a><span id="ligne33" >AFFICHER e</span><br>
+34&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="34">&nbsp;</a><span id="ligne34" >AFFICHER " et x2="</span><br>
+35&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="35">&nbsp;</a><span id="ligne35" >AFFICHER f</span><br>
+36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="36">&nbsp;</a><span id="ligne36" >AFFICHER "Vérification :"</span><br>
+37&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="37">&nbsp;</a><span id="ligne37" >AFFICHER a</span><br>
+38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="38">&nbsp;</a><span id="ligne38" >AFFICHER "*"</span><br>
+39&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="39">&nbsp;</a><span id="ligne39" >AFFICHER e</span><br>
+40&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="40">&nbsp;</a><span id="ligne40" >AFFICHER "²+"</span><br>
+41&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="41">&nbsp;</a><span id="ligne41" >AFFICHER b</span><br>
+42&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="42">&nbsp;</a><span id="ligne42" >AFFICHER "*"</span><br>
+43&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="43">&nbsp;</a><span id="ligne43" >AFFICHER e</span><br>
+44&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="44">&nbsp;</a><span id="ligne44" >AFFICHER "+"</span><br>
+45&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="45">&nbsp;</a><span id="ligne45" >AFFICHER c</span><br>
+46&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="46">&nbsp;</a><span id="ligne46" >AFFICHER "="</span><br>
+47&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="47">&nbsp;</a><span id="ligne47" >AFFICHER i</span><br>
+48&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="48">&nbsp;</a><span id="ligne48" >AFFICHER a</span><br>
+49&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="49">&nbsp;</a><span id="ligne49" >AFFICHER "*"</span><br>
+50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="50">&nbsp;</a><span id="ligne50" >AFFICHER f</span><br>
+51&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="51">&nbsp;</a><span id="ligne51" >AFFICHER "²+"</span><br>
+52&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="52">&nbsp;</a><span id="ligne52" >AFFICHER b</span><br>
+53&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="53">&nbsp;</a><span id="ligne53" >AFFICHER "*"</span><br>
+54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="54">&nbsp;</a><span id="ligne54" >AFFICHER f</span><br>
+55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="55">&nbsp;</a><span id="ligne55" >AFFICHER "+"</span><br>
+56&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="56">&nbsp;</a><span id="ligne56" >AFFICHER c</span><br>
+57&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="57">&nbsp;</a><span id="ligne57" >AFFICHER "="</span><br>
+58&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="58">&nbsp;</a><span id="ligne58" >AFFICHER j</span><br>
+59&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="59">&nbsp;</a><span id="ligne59" >SI (i!=0 OU j!=0) ALORS</span><br>
+60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="60">&nbsp;</a><span id="ligne60" >DEBUT_SI</span><br>
+61&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="61">&nbsp;</a><span id="ligne61" >AFFICHER "Problème de précision!"</span><br>
+62&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="62">&nbsp;</a><span id="ligne62" >FIN_SI</span><br>
+63&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="63">&nbsp;</a><span id="ligne63" >FIN_SI</span><br>
+64&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="64">&nbsp;</a><span id="ligne64" >SINON</span><br>
+65&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="65">&nbsp;</a><span id="ligne65" >DEBUT_SINON</span><br>
+66&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="66">&nbsp;</a><span id="ligne66" >SI (d==0) ALORS</span><br>
+67&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="67">&nbsp;</a><span id="ligne67" >DEBUT_SI</span><br>
+68&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="68">&nbsp;</a><span id="ligne68" >g PREND_LA_VALEUR -b/(2*a)</span><br>
+69&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="69">&nbsp;</a><span id="ligne69" >h PREND_LA_VALEUR a*g*g+b*g+c</span><br>
+70&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="70">&nbsp;</a><span id="ligne70" >AFFICHER "L'équation "</span><br>
+71&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="71">&nbsp;</a><span id="ligne71" >AFFICHER a</span><br>
+72&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="72">&nbsp;</a><span id="ligne72" >AFFICHER "x²+"</span><br>
+73&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="73">&nbsp;</a><span id="ligne73" >AFFICHER b</span><br>
+74&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="74">&nbsp;</a><span id="ligne74" >AFFICHER "x+"</span><br>
+75&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="75">&nbsp;</a><span id="ligne75" >AFFICHER c</span><br>
+76&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="76">&nbsp;</a><span id="ligne76" >AFFICHER "=0 a une solution :"</span><br>
+77&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="77">&nbsp;</a><span id="ligne77" >AFFICHER "x="</span><br>
+78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="78">&nbsp;</a><span id="ligne78" >AFFICHER g</span><br>
+79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="79">&nbsp;</a><span id="ligne79" >AFFICHER "Vérification :"</span><br>
+80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="80">&nbsp;</a><span id="ligne80" >AFFICHER a</span><br>
+81&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="81">&nbsp;</a><span id="ligne81" >AFFICHER "*"</span><br>
+82&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="82">&nbsp;</a><span id="ligne82" >AFFICHER g</span><br>
+83&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="83">&nbsp;</a><span id="ligne83" >AFFICHER "²+"</span><br>
+84&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="84">&nbsp;</a><span id="ligne84" >AFFICHER b</span><br>
+85&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="85">&nbsp;</a><span id="ligne85" >AFFICHER "*"</span><br>
+86&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="86">&nbsp;</a><span id="ligne86" >AFFICHER g</span><br>
+87&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="87">&nbsp;</a><span id="ligne87" >AFFICHER "+"</span><br>
+88&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="88">&nbsp;</a><span id="ligne88" >AFFICHER c</span><br>
+89&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="89">&nbsp;</a><span id="ligne89" >AFFICHER "="</span><br>
+90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="90">&nbsp;</a><span id="ligne90" >AFFICHER h</span><br>
+91&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="91">&nbsp;</a><span id="ligne91" >SI (h!=0) ALORS</span><br>
+92&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="92">&nbsp;</a><span id="ligne92" >DEBUT_SI</span><br>
+93&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="93">&nbsp;</a><span id="ligne93" >AFFICHER "Problème de précision!"</span><br>
+94&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="94">&nbsp;</a><span id="ligne94" >FIN_SI</span><br>
+95&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="95">&nbsp;</a><span id="ligne95" >FIN_SI</span><br>
+96&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="96">&nbsp;</a><span id="ligne96" >SINON</span><br>
+97&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="97">&nbsp;</a><span id="ligne97" >DEBUT_SINON</span><br>
+98&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="98">&nbsp;</a><span id="ligne98" >AFFICHER "L'équation "</span><br>
+99&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="99">&nbsp;</a><span id="ligne99" >AFFICHER a</span><br>
+100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="100">&nbsp;</a><span id="ligne100" >AFFICHER "x²+"</span><br>
+101&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="101">&nbsp;</a><span id="ligne101" >AFFICHER b</span><br>
+102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="102">&nbsp;</a><span id="ligne102" >AFFICHER "x+"</span><br>
+103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="103">&nbsp;</a><span id="ligne103" >AFFICHER c</span><br>
+104&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="104">&nbsp;</a><span id="ligne104" >AFFICHER "=0 n'a pas de solution."</span><br>
+105&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="105">&nbsp;</a><span id="ligne105" >FIN_SINON</span><br>
+106&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="106">&nbsp;</a><span id="ligne106" >FIN_SINON</span><br>
+107&nbsp;&nbsp;<a name="107">&nbsp;</a><span id="ligne107" >FIN_ALGORITHME</span><br>
+
+</div>
+<div id="footer">
+<p>Généré par AlgoBox</p>
+</div>
+</body>
+</html>

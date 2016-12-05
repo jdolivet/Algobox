@@ -1,0 +1,1000 @@
+<!-- Généré par AlgoBox -->
+<html>
+<head>
+<title>AlgoBox</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+BODY 
+{
+font-family:  'Times New Roman',serif,times ;
+background-color:#FFFFFF;
+color:#000000;
+margin-top: 5px;
+margin-left: 5px;
+margin-right: 5px;
+margin-bottom: 5px;
+}
+A:link    { color:#335d88;font-weight: bold; text-decoration: none;}
+A:visited { color:#335d88;font-weight: bold;  text-decoration: none;}
+A:hover   { color:red; font-weight: bold; text-decoration: none;}
+
+textarea
+{
+border-width : 1px;
+font-family :  'Liberation Mono', 'Courier New', monospace; 
+background : #f6f6f6;
+padding : .1em .3em;
+border-color : #000;
+}
+
+#contentlabel
+{
+font-family : 'Times New Roman',serif,times ;
+font-size : 1.2em;
+color: #666666;
+font-variant: small-caps;
+background-color:#FFFFFF;
+padding-left: 0px;
+padding-right: 5px;
+margin-top: 5px;
+margin-bottom: 5px;
+border-bottom: 2px dotted #888;
+}
+
+#contentgraphic
+{
+font-family : 'Times New Roman',serif,times ;
+font-size : 1.2em;
+color: #666666;
+font-variant: small-caps;
+background-color:#FFFFFF;
+padding-left: 0px;
+padding-right: 5px;
+margin-top: 5px;
+margin-bottom: 5px;
+border-bottom: 2px dotted #888;
+}
+
+#header
+{
+color: #666666;
+font-family : 'Times New Roman',serif,times ;
+font-weight: bold;
+font-variant: small-caps;
+background-color:#FFFFFF;
+font-size: 1.4em;
+padding: 2px 0 2px 10px;
+margin: 0px;
+text-align : center;
+/*border-bottom: 2px dotted #888;*/
+}
+
+#code
+{
+font-family :  'Liberation Mono', 'Courier New', monospace; 
+color:#000;
+background-color:#f0f0f0;
+border:1px solid #69c;
+line-height:150%;
+padding: 5px 5px 5px 5px;
+font-size: 0.9em;
+}
+
+#footer
+{
+position : relative;
+top : 1em;
+border-top: 2px dotted;
+border-color: #888;
+text-align: center;
+font-size: .8em;
+font-family :  'Times New Roman',serif,times ;
+padding: 2px;
+clear: both;
+}
+
+div.output 
+{
+overflow: auto;
+border:1px solid #69c;
+padding : .1em .3em;
+background : #f6f6f6;
+}
+
+div.output pre 
+{
+margin: 0;
+font-family: 'Liberation Mono', 'Courier New', monospace; 
+padding: .2em .4em;
+font-size: 0.9em;
+}
+</style>
+<script language="JavaScript">
+/***************************************************************************
+ *   copyright       : (C) 2009-2010 by Pascal Brachet                     *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+var ALGOBOX_x1=0;
+var ALGOBOX_x2=450;
+var ALGOBOX_y1=0;
+var ALGOBOX_y2=450;
+var ALGOBOX_canevas=document.createElement("canvas");
+if (navigator.appName!="Microsoft Internet Explorer")
+    {
+    var ALGOBOX_contexte=ALGOBOX_canevas.getContext("2d");
+    }
+ALGOBOX_canevas.setAttribute("width",ALGOBOX_x2+4);
+ALGOBOX_canevas.setAttribute("height",ALGOBOX_y2+4);
+var ALGOBOX_Xmin=-10;
+var ALGOBOX_Xmax=10;
+var ALGOBOX_Ymin=-10;
+var ALGOBOX_Ymax=10;
+var ALGOBOX_gradx=1;
+var ALGOBOX_grady=1;
+var ALGOBOX_COMPTEUR_AFFICHAGE=0;
+var ALGOBOX_DEPASSEMENT_AFFICHAGE=false;
+var ALGOBOX_COMPTEUR_BOUCLE_GLOBAL=0;
+var ALGOBOX_LIGNE_COURANTE=1;
+var ALGOBOX_EMERGENCY_STOP=false;
+
+//*******************************
+function ALGOBOX_SOMME(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var somme=0;
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else somme+=liste[ind];
+  }
+return somme;
+}
+
+function ALGOBOX_MOYENNE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var somme, result;
+somme=ALGOBOX_SOMME(liste,debut,fin);
+if (somme=="Erreur") return "Erreur";
+result=somme/(fin-debut+1);
+return result;
+}
+
+function ALGOBOX_VARIANCE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var carres=new Array();
+var moyenne=ALGOBOX_MOYENNE(liste,debut,fin);
+var somme,result;
+if (moyenne=="Erreur") return "Erreur";
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else carres[ind]=Math.pow(liste[ind]-moyenne,2);
+  }
+somme=ALGOBOX_SOMME(carres,debut,fin);
+if (somme=="Erreur") return "Erreur";
+result=somme/(fin-debut+1);
+return result;
+}
+
+function ALGOBOX_ECART_TYPE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var variance,result;
+variance=ALGOBOX_VARIANCE(liste,debut,fin);
+if ((variance=="Erreur") || (variance<0)) return "Erreur";
+result=Math.sqrt(variance);
+return result;
+}
+
+function ALGOBOX_MEDIANE(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var eff=fin-debut+1;
+var rang=Math.floor(eff/2);
+var mediane;
+if (eff%2==0)  mediane=(liste_triee[rang]+liste_triee[rang-1])/2;
+else mediane=liste_triee[rang];
+return mediane;
+}
+
+function ALGOBOX_QUARTILE1(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var reste=eff%4;
+var quotient=Math.floor(eff/4);
+switch (reste)
+  {
+  case 0:
+  quartile=(liste_triee[quotient-1]+liste_triee[quotient])/2;
+  break;
+  case 1:
+  quartile=(liste_triee[quotient-1]+liste_triee[quotient])/2;
+  break;
+  case 2:
+  quartile=liste_triee[quotient];
+  break;
+  case 3:
+  quartile=liste_triee[quotient];
+  break;
+  }
+return quartile;
+}
+
+function ALGOBOX_QUARTILE3(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var reste=eff%4;
+var quotient=Math.floor(eff/4);
+switch (reste)
+  {
+  case 0:
+  quartile=(liste_triee[3*quotient-1]+liste_triee[3*quotient])/2;
+  break;
+  case 1:
+  quartile=(liste_triee[3*quotient]+liste_triee[3*quotient+1])/2;
+  break;
+  case 2:
+  quartile=liste_triee[3*quotient+1];
+  break;
+  case 3:
+  quartile=liste_triee[3*quotient+2];
+  break;
+  }
+return quartile;
+}
+
+function ALGOBOX_QUARTILE1_BIS(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var quotient=Math.floor(eff/4);
+var reste=eff/4-quotient;
+if (reste==0) quartile=liste_triee[quotient-1];
+else quartile=liste_triee[quotient];
+return quartile;
+}
+
+function ALGOBOX_QUARTILE3_BIS(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+var eff=fin-debut+1;
+if (eff<4) return "Erreur";
+var liste_triee=new Array();
+for (var ind = debut; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else liste_triee[ind-debut]=liste[ind];
+  }
+liste_triee.sort(function(a,b){ return a-b } );
+var quartile;
+var quotient=Math.floor(3*eff/4);
+var reste=3*eff/4-quotient;
+if (reste==0) quartile=liste_triee[quotient-1];
+else quartile=liste_triee[quotient];
+return quartile;
+}
+
+function ALGOBOX_MINIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=liste[debut];
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]<result) result=liste[ind];
+  }
+return result;
+}
+
+function ALGOBOX_POS_MINIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=debut;
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]<liste[result]) result=ind;
+  }
+return result;
+}
+
+function ALGOBOX_MAXIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=liste[debut];
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]>result) result=liste[ind];
+  }
+return result;
+}
+
+function ALGOBOX_POS_MAXIMUM(liste,debut,fin)
+{
+if ( (!isFinite(debut)) || isNaN(debut) || (!isFinite(fin)) || isNaN(fin)) return "Erreur";
+if ( (debut<0) && (debut>fin) ) return "Erreur";
+if ( (!isFinite(liste[debut])) || isNaN(liste[debut])) return "Erreur";
+var result=debut;
+for (var ind = debut+1; ind<=fin ; ind++)
+  {
+  if ( (!isFinite(liste[ind])) || isNaN(liste[ind])) return "Erreur";
+  else if (liste[ind]>liste[result]) result=ind;
+  }
+return result;
+}
+//*******************************
+
+function ALGOBOX_CALCULER_EXPRESSION(calcul)
+{
+var r;
+calcul.replace(new RegExp("Math.PI","g"),"PI");
+with (Math) {r=eval(calcul)}
+if ( (!isFinite(r)) || isNaN(r)) return "Erreur";
+else return ALGOBOX_ARRONDI(r);
+}
+
+function ALGOBOX_FORMAT_TEXTE(u)
+{
+var r,negatif,m,p,result;
+if (isNaN(u)) result="Erreur";
+else 
+	{
+	if (u<0) negatif=true;
+	r=Math.abs(u).toPrecision(8);
+	if (r.lastIndexOf("e")>0)
+	  {
+	  m=r.substring(0,r.lastIndexOf("e"));
+	  p=r.substring(r.lastIndexOf("e"),r.length);
+	  while ((m.length>1) && (m.indexOf(".")>=0) && (m.lastIndexOf("0")==m.length-1)) {m=m.substring(0,m.length-1);}
+	  if ((m.length>1) && (m.lastIndexOf(".")==m.length-1)) {m=m.substring(0,m.length-1);}
+	  result=m+p;
+	  }
+	else
+	  {
+	  while ((r.length>1) && (r.indexOf(".")>=0) && (r.lastIndexOf("0")==r.length-1)) {r=r.substring(0,r.length-1);}
+	  if ((r.length>1) && (r.lastIndexOf(".")==r.length-1)) {r=r.substring(0,r.length-1);}
+	  result=r;
+	  }
+	if (result.substring(0,1)==".") result="0"+result;
+	if (negatif) result='-'+result;
+	}   
+return result;
+}
+
+function ALGOBOX_ENTIER(nb) 
+{ 
+if (Math.abs(nb)<1) return 0 
+else return parseInt(nb);
+}
+
+function ALGOBOX_ARRONDI(nb) 
+{ 
+if ( (!isFinite(nb)) || isNaN(nb)) return "Erreur";
+else return parseFloat(nb.toPrecision(12));
+}
+//******************
+function ALGOBOX_HX(ALGOBOX_x)
+{
+return (ALGOBOX_x2-ALGOBOX_x1)/(ALGOBOX_Xmax-ALGOBOX_Xmin)*(ALGOBOX_x-ALGOBOX_Xmin)+ALGOBOX_x1;
+}
+
+function ALGOBOX_HY(ALGOBOX_y)
+{
+return (ALGOBOX_y1-ALGOBOX_y2)/(ALGOBOX_Ymax-ALGOBOX_Ymin)*(ALGOBOX_y-ALGOBOX_Ymax)+ALGOBOX_y1;
+}
+
+function ALGOBOX_AXEX()
+{
+ ALGOBOX_DESSINE(0,ALGOBOX_Ymin,0,ALGOBOX_Ymax,1);
+}
+
+function ALGOBOX_AXEY()
+{
+ALGOBOX_DESSINE(ALGOBOX_Xmin,0,ALGOBOX_Xmax,0,1);
+}
+
+function ALGOBOX_IHX(ALGOBOX_x)
+{
+return ALGOBOX_x*(ALGOBOX_Xmax-ALGOBOX_Xmin)/(ALGOBOX_x2-ALGOBOX_x1);
+}
+
+function ALGOBOX_IHY(ALGOBOX_y)
+{
+return ALGOBOX_y*(ALGOBOX_Ymax-ALGOBOX_Ymin)/(ALGOBOX_y1-ALGOBOX_y2);
+}
+
+function ALGOBOX_DESSINE(ALGOBOX_X,ALGOBOX_Y,ALGOBOX_U,ALGOBOX_V,ALGOBOX_coul)
+{
+if (navigator.appName=="Microsoft Internet Explorer") return;
+ALGOBOX_contexte.beginPath();
+    switch (ALGOBOX_coul)
+    {
+    case 0:
+    ALGOBOX_contexte.strokeStyle="gray";
+    ALGOBOX_contexte.lineWidth=0.5;
+    break;
+    case 1:
+    ALGOBOX_contexte.strokeStyle="black";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 2:
+    ALGOBOX_contexte.strokeStyle="blue";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 3:
+    ALGOBOX_contexte.strokeStyle="red";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    case 4:
+    ALGOBOX_contexte.strokeStyle="green";
+    ALGOBOX_contexte.lineWidth=1;
+    break;
+    }
+ALGOBOX_contexte.moveTo(Math.round(ALGOBOX_HX(ALGOBOX_X))+2,Math.round(ALGOBOX_HY(ALGOBOX_Y))+2);
+ALGOBOX_contexte.lineTo(Math.round(ALGOBOX_HX(ALGOBOX_U))+2,Math.round(ALGOBOX_HY(ALGOBOX_V))+2);
+ALGOBOX_contexte.stroke();
+}
+
+function ALGOBOX_GRADUERY(ALGOBOX_originex,ALGOBOX_originey)
+{
+var ALGOBOX_temp=(ALGOBOX_originey-ALGOBOX_Ymin)/ALGOBOX_grady;
+var ALGOBOX_yd=(ALGOBOX_temp-parseInt(ALGOBOX_temp))*ALGOBOX_grady+ALGOBOX_Ymin;
+do
+	{
+	ALGOBOX_DESSINE(ALGOBOX_Xmin,ALGOBOX_yd,ALGOBOX_Xmax,ALGOBOX_yd,0);
+	//ALGOBOX_DESSINE(ALGOBOX_originex,ALGOBOX_yd,ALGOBOX_originex+ALGOBOX_IHX(0.01*(ALGOBOX_x2-ALGOBOX_x1)),ALGOBOX_yd,0);
+	ALGOBOX_yd=ALGOBOX_yd+ALGOBOX_grady;
+	}
+while (ALGOBOX_yd<=ALGOBOX_Ymax);
+}
+
+function ALGOBOX_GRADUERX(ALGOBOX_originex,ALGOBOX_originey)
+{
+var ALGOBOX_temp=(ALGOBOX_originex-ALGOBOX_Xmin)/ALGOBOX_gradx;
+var ALGOBOX_xd=(ALGOBOX_temp-parseInt(ALGOBOX_temp))*ALGOBOX_gradx+ALGOBOX_Xmin;
+do
+	{
+	ALGOBOX_DESSINE(ALGOBOX_xd,ALGOBOX_Ymin,ALGOBOX_xd,ALGOBOX_Ymax,0);
+	//ALGOBOX_DESSINE(ALGOBOX_xd,ALGOBOX_originey,ALGOBOX_xd,ALGOBOX_originey-ALGOBOX_IHY(0.01*(ALGOBOX_y2-ALGOBOX_y1)),0);
+	ALGOBOX_xd=ALGOBOX_xd+ALGOBOX_gradx;
+	}
+while (ALGOBOX_xd<=ALGOBOX_Xmax);
+}
+
+function ALGOBOX_GRADUATION()
+{
+if (ALGOBOX_Xmin*ALGOBOX_Xmax<=0) ALGOBOX_originex=0;
+else ALGOBOX_originex=ALGOBOX_Xmin;
+if (ALGOBOX_Ymin*ALGOBOX_Ymax<=0) ALGOBOX_originey=0;
+else ALGOBOX_originey=ALGOBOX_Ymin;
+ALGOBOX_GRADUERX(ALGOBOX_originex,ALGOBOX_originey);
+ALGOBOX_GRADUERY(ALGOBOX_originex,ALGOBOX_originey);
+}
+
+function ALGOBOX_CODAGE_POINT(ALGOBOX_x,ALGOBOX_y)
+{
+var tableau=new Array(4);
+if (ALGOBOX_x<ALGOBOX_Xmin) tableau[0]=1;
+else tableau[0]=0;
+if (ALGOBOX_x>ALGOBOX_Xmax) tableau[1]=1;
+else tableau[1]=0;
+if (ALGOBOX_y<ALGOBOX_Ymin) tableau[2]=1;
+else tableau[2]=0;
+if (ALGOBOX_y>ALGOBOX_Ymax) tableau[3]=1;
+else tableau[3]=0;
+return tableau;
+}
+
+function ALGOBOX_INTER(ALGOBOX_code1,ALGOBOX_code2)
+{
+var ALGOBOX_s=0;
+for (ALGOBOX_ind=0;ALGOBOX_ind<=3;ALGOBOX_ind++) 
+	{
+	ALGOBOX_s=ALGOBOX_s+ALGOBOX_code1[ALGOBOX_ind]*ALGOBOX_code2[ALGOBOX_ind];
+	}
+return ALGOBOX_s;
+}
+
+function ALGOBOX_DEDANS(ALGOBOX_c)
+{
+var ALGOBOX_result=true;
+for (ALGOBOX_ind=0;ALGOBOX_ind<=3;ALGOBOX_ind++) 
+	{
+	if (ALGOBOX_c[ALGOBOX_ind]==1) ALGOBOX_result=false;
+	}
+return ALGOBOX_result;
+}
+
+function ALGOBOX_POINT(ALGOBOX_xd,ALGOBOX_yd,ALGOBOX_coul)
+{
+if (navigator.appName=="Microsoft Internet Explorer") return;
+var ALGOBOX_code=ALGOBOX_CODAGE_POINT(ALGOBOX_xd,ALGOBOX_yd);
+if (ALGOBOX_DEDANS(ALGOBOX_code))
+    {
+    ALGOBOX_contexte.beginPath();
+    switch (ALGOBOX_coul)
+    {
+    case 0:
+    ALGOBOX_contexte.fillStyle="gray";
+    break;
+    case 1:
+    ALGOBOX_contexte.fillStyle="black";
+    break;
+    case 2:
+    ALGOBOX_contexte.fillStyle="blue";
+    break;
+    case 3:
+    ALGOBOX_contexte.fillStyle="red";
+    break;
+    case 4:
+    ALGOBOX_contexte.fillStyle="green";
+    break;
+    }
+    ALGOBOX_contexte.arc(ALGOBOX_HX(ALGOBOX_xd)+2,ALGOBOX_HY(ALGOBOX_yd)+2, 2, 0, Math.PI*2, true);
+    ALGOBOX_contexte.closePath();
+    ALGOBOX_contexte.fill();
+    }
+}
+
+function ALGOBOX_TRAIT(ALGOBOX_xd,ALGOBOX_yd,ALGOBOX_xf,ALGOBOX_yf,ALGOBOX_coul)
+{
+var ALGOBOX_xdd=ALGOBOX_xd;
+var ALGOBOX_ydd=ALGOBOX_yd;
+var ALGOBOX_xff=ALGOBOX_xf;
+var ALGOBOX_yff=ALGOBOX_yf;
+var ALGOBOX_coded=ALGOBOX_CODAGE_POINT(ALGOBOX_xdd,ALGOBOX_ydd);
+var ALGOBOX_codef=ALGOBOX_CODAGE_POINT(ALGOBOX_xff,ALGOBOX_yff);
+if (ALGOBOX_DEDANS(ALGOBOX_coded) && ALGOBOX_DEDANS(ALGOBOX_codef)) ALGOBOX_DESSINE(ALGOBOX_xdd,ALGOBOX_ydd,ALGOBOX_xff,ALGOBOX_yff,ALGOBOX_coul);
+else
+{
+	if (ALGOBOX_INTER(ALGOBOX_coded,ALGOBOX_codef)==0)
+	{
+		do
+		{
+			ALGOBOX_dx=(ALGOBOX_xff-ALGOBOX_xdd);
+			ALGOBOX_dy=(ALGOBOX_yff-ALGOBOX_ydd);
+			if (ALGOBOX_coded[0]==1)
+					{
+					ALGOBOX_ydd=ALGOBOX_ydd+(ALGOBOX_Xmin-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xdd=ALGOBOX_Xmin;
+					}
+			else if (ALGOBOX_coded[1]==1)
+					{
+					ALGOBOX_ydd=ALGOBOX_ydd+(ALGOBOX_Xmax-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xdd=ALGOBOX_Xmax;
+					}
+				else if (ALGOBOX_coded[2]==1)
+						{
+						ALGOBOX_xdd=ALGOBOX_xdd+(ALGOBOX_Ymin-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+						ALGOBOX_ydd=ALGOBOX_Ymin;
+						}
+					else if (ALGOBOX_coded[3]==1)
+							{
+							ALGOBOX_xdd=ALGOBOX_xdd+(ALGOBOX_Ymax-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+							ALGOBOX_ydd=ALGOBOX_Ymax;
+							}
+			ALGOBOX_coded=ALGOBOX_CODAGE_POINT(ALGOBOX_xdd,ALGOBOX_ydd);
+		}
+		while (!ALGOBOX_DEDANS(ALGOBOX_coded));
+		do
+		{
+			ALGOBOX_dx=(ALGOBOX_xff-ALGOBOX_xdd);
+			ALGOBOX_dy=(ALGOBOX_yff-ALGOBOX_ydd);
+			if (ALGOBOX_codef[0]==1)
+					{
+					ALGOBOX_yff=ALGOBOX_ydd+(ALGOBOX_Xmin-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xff=ALGOBOX_Xmin;
+					}
+			else if (ALGOBOX_codef[1]==1)
+					{
+					ALGOBOX_yff=ALGOBOX_ydd+(ALGOBOX_Xmax-ALGOBOX_xdd)*ALGOBOX_dy/ALGOBOX_dx;
+					ALGOBOX_xff=ALGOBOX_Xmax;
+					}
+				else if (ALGOBOX_codef[2]==1)
+						{
+						ALGOBOX_xff=ALGOBOX_xdd+(ALGOBOX_Ymin-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+						ALGOBOX_yff=ALGOBOX_Ymin;
+						}
+					else if (ALGOBOX_codef[3]==1)
+							{
+							ALGOBOX_xff=ALGOBOX_xdd+(ALGOBOX_Ymax-ALGOBOX_ydd)*ALGOBOX_dx/ALGOBOX_dy;
+							ALGOBOX_yff=ALGOBOX_Ymax;
+							}
+			ALGOBOX_codef=ALGOBOX_CODAGE_POINT(ALGOBOX_xff,ALGOBOX_yff);
+		}
+		while (!ALGOBOX_DEDANS(ALGOBOX_codef));
+		ALGOBOX_DESSINE(ALGOBOX_xdd,ALGOBOX_ydd,ALGOBOX_xff,ALGOBOX_yff,ALGOBOX_coul);
+	}
+}
+}
+
+function ALGOBOX_REPERE(xmin,xmax,ymin,ymax,gradx,grady)
+{
+ALGOBOX_Xmin=xmin;
+ALGOBOX_Xmax=xmax;
+ALGOBOX_Ymin=ymin;
+ALGOBOX_Ymax=ymax;
+ALGOBOX_gradx=gradx;
+ALGOBOX_grady=grady;
+var output_legende=document.getElementById("legende");
+while (output_legende.firstChild) 
+  {
+  output_legende.removeChild(output_legende.firstChild);
+  }
+if (navigator.appName=="Microsoft Internet Explorer")
+    {
+    output_legende.appendChild(document.createTextNode("Votre navigateur ne permet pas l'affichage des graphiques : utilisez AlgoBox ou un navigateur autre qu'internet explorer."));
+    return;
+    }
+if ((ALGOBOX_Xmin>=ALGOBOX_Xmax) || (ALGOBOX_Ymin>=ALGOBOX_Ymax))
+    {
+    ALGOBOX_Xmin=-10;
+    ALGOBOX_Xmax=10;
+    ALGOBOX_Ymin=-10;
+    ALGOBOX_Ymax=10;
+    }
+if (ALGOBOX_gradx<=0) ALGOBOX_gradx=1;
+if (ALGOBOX_grady<=0) ALGOBOX_grady=1;
+if ((ALGOBOX_Xmax-ALGOBOX_Xmin)/ALGOBOX_gradx>45) ALGOBOX_gradx=Math.round((ALGOBOX_Xmax-ALGOBOX_Xmin)/45);
+if ((ALGOBOX_Ymax-ALGOBOX_Ymin)/ALGOBOX_grady>45) ALGOBOX_grady=Math.round((ALGOBOX_Ymax-ALGOBOX_Ymin)/45); 
+ALGOBOX_GRADUATION();
+ALGOBOX_contexte.strokeStyle="black";
+ALGOBOX_contexte.strokeRect(ALGOBOX_x1+2,ALGOBOX_y1+2,ALGOBOX_x2-ALGOBOX_x1,ALGOBOX_y2-ALGOBOX_y1);
+if (ALGOBOX_Xmin*ALGOBOX_Xmax<=0) ALGOBOX_AXEX();
+if (ALGOBOX_Ymin*ALGOBOX_Ymax<=0) ALGOBOX_AXEY();
+legende=document.createTextNode("Xmin: "+ALGOBOX_Xmin+" ; Xmax: "+ALGOBOX_Xmax+" ; Ymin: "+ALGOBOX_Ymin+" ; Ymax: "+ALGOBOX_Ymax+" ; GradX: "+ALGOBOX_gradx+" ; GradY: "+ALGOBOX_grady);
+output_legende.appendChild(legende);
+}
+
+function ALGOBOX_INIT_VARIABLES()
+{
+ALGOBOX_COMPTEUR_AFFICHAGE=0;
+ALGOBOX_DEPASSEMENT_AFFICHAGE=false;
+ALGOBOX_EMERGENCY_STOP=false;
+i=0;
+n=0;
+a=0;
+q=0;
+
+}
+
+function ALGOBOX_EFFACE_OUTPUT()
+{
+var output=document.getElementById("output");
+while (output.firstChild) 
+  {
+  output.removeChild(output.firstChild);
+  }
+}
+
+function ALGOBOX_AFFICHE_OUTPUT(texte,nl)
+{
+var output=document.getElementById("output");
+if (output.childNodes.length>0)
+  {
+  var derniere_ligne=output.lastChild;
+  var ligne=document.createElement("pre");
+  ligne.appendChild(document.createTextNode(derniere_ligne.lastChild.nodeValue+texte));
+  output.replaceChild(ligne,derniere_ligne);
+  }
+else
+  {
+  var ligne=document.createElement("pre");
+  ligne.appendChild(document.createTextNode(texte));
+  output.appendChild(ligne);
+  }
+if (nl)
+   {
+    var nouvelle_ligne=document.createElement("pre");
+    nouvelle_ligne.appendChild(document.createTextNode(""));
+    output.appendChild(nouvelle_ligne);
+   }
+output.scrollTop = output.scrollHeight - output.clientHeight;
+}
+
+function ALGOBOX_AJOUTE_OUTPUT(texte,nl)
+{
+ALGOBOX_COMPTEUR_AFFICHAGE++;
+if (ALGOBOX_COMPTEUR_AFFICHAGE>=1000)
+  {
+  if (confirm("L'algorithme demande d'afficher un très grand nombre de données provoquant ainsi un risque de gel du programme.\nSouhaitez-vous arrêter l'algorithme?")) ALGOBOX_DEPASSEMENT_AFFICHAGE=true;
+  else 
+	{
+	ALGOBOX_AFFICHE_OUTPUT(texte,nl);
+	}
+ALGOBOX_COMPTEUR_AFFICHAGE=0;
+  }
+else ALGOBOX_AFFICHE_OUTPUT(texte,nl);
+}
+
+function ALGOBOX_PAUSE()
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***pause***",true);
+return confirm("Pause dans l'exécution de l'algorithme.\nSouhaitez-vous continuer l'exécution de l'algorithme?");
+}
+
+function ALGOBOX_ACTIVER_LIGNE(ALGOBOX_ID_LIGNE)
+{
+var ligne_source=document.getElementById("ligne"+ALGOBOX_ID_LIGNE);
+ligne_source.style.color="red";
+ligne_source.style.fontWeight="bold";
+}
+
+function ALGOBOX_DESACTIVER_LIGNE(ALGOBOX_ID_LIGNE)
+{
+var ligne_source=document.getElementById("ligne"+ALGOBOX_ID_LIGNE);
+ligne_source.style.fontWeight="normal";
+ligne_source.style.color="black";
+}
+
+// Code Algorithme :
+ALGOBOX_LIGNE_COURANTE=1;
+//VARIABLES
+ALGOBOX_LIGNE_COURANTE=2;
+i=new Number();
+ALGOBOX_LIGNE_COURANTE=3;
+n=new Number();
+ALGOBOX_LIGNE_COURANTE=4;
+a=new Number();
+ALGOBOX_LIGNE_COURANTE=5;
+q=new Number();
+function F1(x)
+{
+return x;
+}
+function ALGOBOX_ALGO(ALGOBOX_PAS_A_PAS)
+{
+ALGOBOX_DESACTIVER_LIGNE(ALGOBOX_LIGNE_COURANTE);
+ALGOBOX_LIGNE_COURANTE=6;
+ALGOBOX_COMPTEUR_BOUCLE_GLOBAL=0
+ALGOBOX_EFFACE_OUTPUT();
+ALGOBOX_INIT_VARIABLES();
+output_graph=document.getElementById("graphique");
+if (output_graph.firstChild) output_graph.removeChild(output_graph.firstChild);
+output_graph.appendChild(ALGOBOX_canevas);
+if (navigator.appName!="Microsoft Internet Explorer") ALGOBOX_contexte.clearRect(0, 0, ALGOBOX_canevas.width,ALGOBOX_canevas.height);
+if (ALGOBOX_PAS_A_PAS) ALGOBOX_AJOUTE_OUTPUT("***Algorithme lancé en mode pas à pas***",true);
+else ALGOBOX_AJOUTE_OUTPUT("***Algorithme lancé***",true);
+try
+{
+ALGOBOX_LIGNE_COURANTE=7;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(0)=="Erreur") {throw("erreur_calcul");}
+n=ALGOBOX_ARRONDI(0);
+
+ALGOBOX_SECURITE_BOUCLE1=0;
+ALGOBOX_LIGNE_COURANTE=8;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+document.getElementById("contentgraphic").style.visibility="visible";
+if (ALGOBOX_ARRONDI(0)=="Erreur") {throw("erreur_repere");}
+if (ALGOBOX_ARRONDI(1000)=="Erreur") {throw("erreur_repere");}
+if (ALGOBOX_ARRONDI(0)=="Erreur") {throw("erreur_repere");}
+if (ALGOBOX_ARRONDI(1)=="Erreur") {throw("erreur_repere");}
+if (ALGOBOX_ARRONDI(100)=="Erreur") {throw("erreur_repere");}
+if (ALGOBOX_ARRONDI(1/6)=="Erreur") {throw("erreur_repere");}
+ALGOBOX_REPERE(0,1000,0,1,100,1/6);
+for (i=1;i<=1000;i++)
+{
+ALGOBOX_SECURITE_BOUCLE1++;
+ALGOBOX_COMPTEUR_BOUCLE_GLOBAL++;
+ALGOBOX_LIGNE_COURANTE=9;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=10;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(Math.floor(6*Math.random()+1))=="Erreur") {throw("erreur_calcul");}
+a=ALGOBOX_ARRONDI(Math.floor(6*Math.random()+1));
+
+ALGOBOX_LIGNE_COURANTE=11;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (a==3)
+{
+ALGOBOX_LIGNE_COURANTE=12;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+
+ALGOBOX_LIGNE_COURANTE=13;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(n+1)=="Erreur") {throw("erreur_calcul");}
+n=ALGOBOX_ARRONDI(n+1);
+
+ALGOBOX_LIGNE_COURANTE=14;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+}
+ALGOBOX_LIGNE_COURANTE=15;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(n/i)=="Erreur") {throw("erreur_calcul");}
+q=ALGOBOX_ARRONDI(n/i);
+
+ALGOBOX_LIGNE_COURANTE=16;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(i),false);
+ALGOBOX_LIGNE_COURANTE=17;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("ème lancer : on obtient un ",false);
+ALGOBOX_LIGNE_COURANTE=18;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(a),true);
+ALGOBOX_LIGNE_COURANTE=19;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_ARRONDI(i)=="Erreur") {throw("erreur_calcul");}
+if (ALGOBOX_ARRONDI(q)=="Erreur") {throw("erreur_calcul");}
+ALGOBOX_POINT(i,q,3);
+ALGOBOX_LIGNE_COURANTE=20;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+if (ALGOBOX_DEPASSEMENT_AFFICHAGE) {throw("erreur_affiche"); break;}
+if (ALGOBOX_SECURITE_BOUCLE1>200000) {throw("erreur_boucle"); break;}
+if (ALGOBOX_COMPTEUR_BOUCLE_GLOBAL>1000000) {throw("erreur_boucle"); break;}
+}
+ALGOBOX_LIGNE_COURANTE=21;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT("Après 1000 lancers, la fréquence d'apparition du 3 est : ",false);
+ALGOBOX_LIGNE_COURANTE=22;
+if (ALGOBOX_EMERGENCY_STOP) {throw("erreur_emergency");}
+ALGOBOX_AJOUTE_OUTPUT(ALGOBOX_FORMAT_TEXTE(q),false);
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme terminé***",false);
+}
+catch(ALGOBOX_MESSAGE)
+{
+if (ALGOBOX_MESSAGE=="erreur_input")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : erreur dans la lecture d'une variable ***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_calcul")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : erreur de calcul***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_boucle")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : dépassement de la capacité autorisée pour les boucles***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_affiche")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" : affichage trop important de données***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_repere")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu : erreur dans la définition du repère graphique***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_pause")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+"***",false);
+}
+else if (ALGOBOX_MESSAGE=="erreur_emergency")
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu sur demande***",false);
+}
+else
+{
+ALGOBOX_AJOUTE_OUTPUT(" ",true);
+ALGOBOX_AJOUTE_OUTPUT("***Algorithme interrompu ligne "+ALGOBOX_LIGNE_COURANTE+" suite à une erreur dans son exécution***",false);
+}
+ALGOBOX_ACTIVER_LIGNE(ALGOBOX_LIGNE_COURANTE);
+window.location.href = "#"+ALGOBOX_LIGNE_COURANTE;
+
+}
+}
+
+</script>
+</head>
+<body>
+<div id="header">AlgoBox : Stabilisation de la fréquence</div>
+<div id="contentlabel">Présentation de l'algorithme :</div>
+<p>
+Simulation d'un lancer de dé : on s'intéresse à la fréquence d'apparition du 3<br>Pour 1000 lancers on constate que la fréquence se stabilise autour de 1/6
+</p>
+
+<div id="contentlabel">Tester l'algorithme :</div>
+<form name="forme1">
+<p>
+<input type="button" name="bouton" value="Lancer algorithme" onclick="ALGOBOX_ALGO(false);"><br>
+<i>(cliquer sur le bouton ci-dessus pour lancer ou relancer l'exécution de l'algorithme)</i><br>
+<b>Remarque :</b> si les messages "Algorithme lancé" et "Algorithme terminé" n'apparaissent pas au bout d'un moment dans la zone ci-dessous, c'est que l'algorithme contient une erreur.</p>
+<div id="contentlabel">Résultats :</div>
+<div style="width: 700px; height: 200px;" id="output" class="output">
+</div>
+</form>
+<div id="contentgraphic" style="visibility : hidden;">Graphique :</div>
+<div id="graphique"></div>
+<p id="legende"></p>
+<div id="contentlabel">Code de l'algorithme :</div>
+<div id="code">
+1&nbsp;&nbsp;&nbsp;&nbsp;<a name="1">&nbsp;</a><span id="ligne1" >VARIABLES</span><br>
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="2">&nbsp;</a><span id="ligne2" >i EST_DU_TYPE NOMBRE</span><br>
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="3">&nbsp;</a><span id="ligne3" >n EST_DU_TYPE NOMBRE</span><br>
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="4">&nbsp;</a><span id="ligne4" >a EST_DU_TYPE NOMBRE</span><br>
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="5">&nbsp;</a><span id="ligne5" >q EST_DU_TYPE NOMBRE</span><br>
+6&nbsp;&nbsp;&nbsp;&nbsp;<a name="6">&nbsp;</a><span id="ligne6" >DEBUT_ALGORITHME</span><br>
+7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="7">&nbsp;</a><span id="ligne7" >n PREND_LA_VALEUR 0</span><br>
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="8">&nbsp;</a><span id="ligne8" >POUR i ALLANT_DE 1 A 1000</span><br>
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="9">&nbsp;</a><span id="ligne9" >DEBUT_POUR</span><br>
+10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="10">&nbsp;</a><span id="ligne10" >a PREND_LA_VALEUR floor(6*random()+1)</span><br>
+11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="11">&nbsp;</a><span id="ligne11" >SI (a==3) ALORS</span><br>
+12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="12">&nbsp;</a><span id="ligne12" >DEBUT_SI</span><br>
+13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="13">&nbsp;</a><span id="ligne13" >n PREND_LA_VALEUR n+1</span><br>
+14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="14">&nbsp;</a><span id="ligne14" >FIN_SI</span><br>
+15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="15">&nbsp;</a><span id="ligne15" >q PREND_LA_VALEUR n/i</span><br>
+16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="16">&nbsp;</a><span id="ligne16" >AFFICHER i</span><br>
+17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="17">&nbsp;</a><span id="ligne17" >AFFICHER "ème lancer : on obtient un "</span><br>
+18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="18">&nbsp;</a><span id="ligne18" >AFFICHER a</span><br>
+19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="19">&nbsp;</a><span id="ligne19" >TRACER_POINT (i,q)</span><br>
+20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="20">&nbsp;</a><span id="ligne20" >FIN_POUR</span><br>
+21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="21">&nbsp;</a><span id="ligne21" >AFFICHER "Après 1000 lancers, la fréquence d'apparition du 3 est : "</span><br>
+22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="22">&nbsp;</a><span id="ligne22" >AFFICHER q</span><br>
+23&nbsp;&nbsp;&nbsp;<a name="23">&nbsp;</a><span id="ligne23" >FIN_ALGORITHME</span><br>
+
+</div>
+<div id="footer">
+<p>Généré par AlgoBox</p>
+</div>
+</body>
+</html>
